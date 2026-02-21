@@ -76,8 +76,23 @@ class NJugsProblem(SearchProblem):
     j is a valid number only if the action is "pour" (i.e. pour from jug i into jug j). Otherwise it should be set to None
     """
 
-    def actions(state):
-        raise NotImplementedError
+    def actions(self, state):
+        if len(state) != self.n:
+            raise ValueError("Lenght of 'state' doesn't match length of capacities")
+        actions = []
+        index = 0
+        for jug in state:
+            if state[jug] < self.capacities[jug] and state[index] > 0 and index != jug:
+                actions.append(("pour", index, jug))
+                if index < self.n:
+                    index += 1
+                else:
+                    index = 0
+            if state[jug] < self.capacities[jug]:
+                actions.append(("fill", jug))
+            if state[jug] > 0:
+                actions.append(("empty", jug))
+        return tuple(actions)
 
     """
     Returns the state of the jugs after taking action (kind, i, j), without modifying the original state.
