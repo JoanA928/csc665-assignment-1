@@ -101,6 +101,23 @@ class NJugsProblem(SearchProblem):
             state = list(state)
             state[jug] = self.capacities[jug]
             return tuple(state)
+        elif action[0] == "empty":
+            jug = action[1]
+            state = list(state)
+            state[jug] = 0
+            return tuple(state)
+        elif action[0] == "pour":
+            sourceJug = action[1]
+            targetJug = action[2]
+            state = list(state)
+            while (
+                state[sourceJug] > 0 and state[targetJug] < self.capacities[targetJug]
+            ):
+                state[sourceJug] = state[sourceJug] - 1
+                state[targetJug] = state[targetJug] + 1
+            return tuple(state)
+        else:
+            raise ValueError(f"unknown action: {action}")
 
     # ---- Helpers ----
 
