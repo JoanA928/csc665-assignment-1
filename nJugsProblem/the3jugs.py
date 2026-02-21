@@ -3,6 +3,7 @@
 # Authors: S. El Alaoui and ChatGPT 5
 # ============================================================
 
+
 class SearchProblem:
     def start_state(self):
         raise NotImplementedError()
@@ -21,7 +22,7 @@ class SearchProblem:
 
 
 # Action = of type Tuple[str, int, Optional[int]]  # ('fill', i, None) | ('empty', i, None) | ('pour', i, j)
-# State = of type Tuple[int, ...] 
+# State = of type Tuple[int, ...]
 
 
 class NJugsProblem(SearchProblem):
@@ -40,13 +41,14 @@ class NJugsProblem(SearchProblem):
         if any(c <= 0 for c in caps):
             raise ValueError("All capacities must be positive integers.")
 
-
         if not goal:
             raise ValueError("Goal must be provided.")
 
         goal = tuple(int(x) for x in goal)
         if len(goal) != len(capacities):
-            raise ValueError("Goal length must match number of capacities (", len(capacities), ").")
+            raise ValueError(
+                "Goal length must match number of capacities (", len(capacities), ")."
+            )
 
         self.capacities = caps
         self.n = len(caps)
@@ -73,6 +75,7 @@ class NJugsProblem(SearchProblem):
     i corresponds to the jug affected by the action
     j is a valid number only if the action is "pour" (i.e. pour from jug i into jug j). Otherwise it should be set to None
     """
+
     def actions(state):
         raise NotImplementedError
 
@@ -89,9 +92,15 @@ class NJugsProblem(SearchProblem):
     implementation of this function. You’ll likely want to make a 
     copy of the state first before making any changes.
     """
-    def succ(state, action):
-        raise NotImplementedError
 
+    def succ(self, state, action):
+        if len(state) != self.n:
+            raise ValueError("Lenght of 'state' doesn't match legnth of 'capacities")
+        if action[0] == "fill":
+            jug = action[1]
+            state = list(state)
+            state[jug] = self.capacities[jug]
+            return tuple(state)
 
     # ---- Helpers ----
 
@@ -102,4 +111,3 @@ class NJugsProblem(SearchProblem):
     @property
     def capacities_tuple(self):
         return self.capacities
-
