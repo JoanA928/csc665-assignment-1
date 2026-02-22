@@ -2,9 +2,9 @@
 
 
 class State:
-    def __init__(self, coins, playerScore=0, aiScore=0, turn="player"):
+    def __init__(self, coins, pScore=0, aiScore=0, turn="player"):
         self.coins = coins
-        self.playerScore = playerScore
+        self.pScore = pScore
         self.aiScore = aiScore
         self.turn = turn
 
@@ -100,17 +100,17 @@ def succ(state, action):
     points = sum(taken)
 
     if state.turn == "player":
-        new_playerScore = state.pScore + points
+        new_pScore = state.pScore + points
         new_aiScore = state.aiScore
         new_turn = "ai"
     else:
-        new_playerScore = state.pScore
+        new_pScore = state.pScore
         new_aiScore = state.aiScore + points
         new_turn = "player"
 
     return State(
         coins=new_coins,
-        playerScore=new_playerScore,
+        pScore=new_pScore,
         aiScore=new_aiScore,
         turn=new_turn,
     )
@@ -137,7 +137,7 @@ You may assume utility will only be called on a state if terminal(state) is True
 
 
 def utility(state):
-    return (state.playerScore, state.aiScore)
+    return (state.pScore, state.aiScore)
 
 
 """
@@ -154,9 +154,9 @@ def winner(state):
     if not terminal(state):
         return None
 
-    if state.playerScore > state.aiScore:
+    if state.pScore > state.aiScore:
         return "player"
-    elif state.aiScore > state.playerScore:
+    elif state.aiScore > state.pScore:
         return "AI"
     else:
         return None
@@ -176,11 +176,11 @@ If the board is a terminal board, the minimax function should return None.
 
 def minimax(state, isMaximizing):
     if terminal(state):
-        return (state.playerScore - state.aiScore, None)
+        return (state.pScore - state.aiScore, None)
 
     possibleActions = actions(state)
     if not possibleActions:
-        return (state.playerScore - state.aiScore, None)
+        return (state.pScore - state.aiScore, None)
 
     if isMaximizing:
         bestValue = -float("inf")
