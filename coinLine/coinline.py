@@ -78,7 +78,42 @@ deep copy of the state first before making any changes.
 
 
 def succ(state, action):
-    raise NotImplementedError
+    side, num = action
+
+    if side not in ("L", "R") or num not in (1, 2):
+        raise ValueError("Error: bad action format")
+
+    coins_left = len(state.coins)
+
+    if num > coins_left:
+        raise ValueError("Cant take more coins than available")
+
+    new_coins = list(state.coins)
+
+    if side == "L":
+        taken = new_coins[:num]
+        new_coins = new_coins[num:]
+    else:
+        taken = new_coins[-num:]
+        new_coins = new_coins[:-num]
+
+    points = sum(taken)
+
+    if state.turn == "player":
+        new_pScore = state.pScore + points
+        new_aiScore = state.aiScore
+        new_turn = "ai"
+    else:
+        new_pScore = state.pScore
+        new_aiScore = state.aiScore + points
+        new_turn = "player"
+
+    return State(
+        coins=new_coins,
+        pScore=new_pScore,
+        aiScore=new_aiScore,
+        turn=new_turn,
+    )
 
 
 """
