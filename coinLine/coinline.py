@@ -20,12 +20,7 @@ If there no coins left, any return value is acceptable.
 
 
 def player(state):
-    if state.turn == "player":
-        state.turn = "AI"
-        return state.turn
-    else:
-        state.turn = "player"
-        return state.turn
+    return state.turn
 
 
 """
