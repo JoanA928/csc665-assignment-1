@@ -169,7 +169,7 @@ If the board is a terminal board, the minimax function should return None.
 """
 
 
-def minimax(state, isMaximizing):
+def minimax(state, is_maximizing):
     if terminal(state):
         return (state.pScore - state.aiScore, None)
 
@@ -177,7 +177,7 @@ def minimax(state, isMaximizing):
     if not possibleActions:
         return (state.pScore - state.aiScore, None)
 
-    if isMaximizing:
+    if is_maximizing:
         bestValue = -float("inf")
         bestAction = None
         for a in possibleActions:
