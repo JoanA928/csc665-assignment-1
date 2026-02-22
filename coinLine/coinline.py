@@ -2,9 +2,9 @@
 
 
 class State:
-    def __init__(self, coins, pScore=0, aiScore=0, turn="player"):
+    def __init__(self, coins, playerScore=0, aiScore=0, turn="player"):
         self.coins = coins
-        self.pScore = pScore
+        self.playerScore = pScore
         self.aiScore = aiScore
         self.turn = turn
 
@@ -100,17 +100,17 @@ def succ(state, action):
     points = sum(taken)
 
     if state.turn == "player":
-        new_pScore = state.pScore + points
+        new_playerScore = state.pScore + points
         new_aiScore = state.aiScore
         new_turn = "ai"
     else:
-        new_pScore = state.pScore
+        new_playerScore = state.pScore
         new_aiScore = state.aiScore + points
         new_turn = "player"
 
     return State(
         coins=new_coins,
-        pScore=new_pScore,
+        playerScore=new_pScore,
         aiScore=new_aiScore,
         turn=new_turn,
     )
@@ -137,7 +137,7 @@ You may assume utility will only be called on a state if terminal(state) is True
 
 
 def utility(state):
-    return (state.pScore, state.aiScore)
+    return (state.playerScore, state.aiScore)
 
 
 """
@@ -151,7 +151,15 @@ Returns the winner of the game, if there is one.
 
 
 def winner(state):
-    raise NotImplementedError
+    if not terminal(state):
+        return None
+
+    if state.playerScore > state.aiScore:
+        return "player"
+    elif state.aiScore > state.playerScore:
+        return "AI"
+    else:
+        return None
 
 
 """
