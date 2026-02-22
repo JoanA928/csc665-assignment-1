@@ -137,22 +137,32 @@ returns a dictionary with the following informatin:
 
 
 class BFSSearch:
-    def __init__(self, problem: SearchProblem):
+    def __init__(self, problem):
         self.problem = problem
         self.best_cost = math.inf
         self.best_path = None
         self.found = False
         self.expanded = 0
 
+        self.totalSuccessors = 0
+        self.maxDepth = 0
+        self.shallowestDepth = None
+        self.execTime = 0.0
+
     def solve(self):
-        self.best_cost = math.inf
         self.best_cost = math.inf
         self.best_path = None
         self.found = False
         self.expanded = 0
 
-        start = self.problem.start_state()
+        self.totalSuccessors = 0
+        self.maxDepth = 0
+        self.shallowestDepth = None
+        self.execTime = 0.0
 
+        t0 = time.perf_counter()
+
+        start = self.problem.start_state()
         frontier = deque()
         frontier.append((start, [start], 0))
 
@@ -163,23 +173,41 @@ class BFSSearch:
             state, path, currentCost = frontier.popleft()
             self.expanded += 1
 
+            depth = len(path) - 1
+            if depth > self.maxDepth:
+                self.maxDepth = depth
+
+            actions = self.problem.actions(state)
+            self.totalSuccessors += len(actions)
+
             if self.problem.is_end(state):
                 self.best_cost = currentCost
                 self.best_path = path
                 self.found = True
+                self.shallowestDepth = depth
                 break
-            for action in self.problem.actions(state):
-                nextState = self.problem.succ(state, action)
 
+            for action in actions:
+                nextState = self.problem.succ(state, action)
                 if nextState not in explored:
                     explored.add(nextState)
                     cost = currentCost + self.problem.cost(state, action)
                     frontier.append((nextState, path + [nextState], cost))
+
+        self.execTime = time.perf_counter() - t0
+
+        b = (self.totalSuccessors / self.expanded) if self.expanded > 0 else 0.0
+        d = self.shallowestDepth
+
         return {
             "best_cost": self.best_cost,
             "best_path": self.best_path,
             "found": self.found,
             "expanded": self.expanded,
+            "b": b,
+            "D": self.maxDepth,
+            "d": d,
+            "time": self.execTime,
         }
 
 
@@ -197,18 +225,28 @@ returns a dictionary with the following informatin:
 
 
 class DFSSearch:
-    def __init__(self, problem: SearchProblem):
+    def __init__(self, problem):
         self.problem = problem
         self.best_cost = math.inf
         self.best_path = None
         self.found = False
         self.expanded = 0
 
+        self.totalSuccessors = 0
+        self.maxDepth = 0
+        self.execTime = 0.0
+
     def solve(self):
         self.best_cost = math.inf
         self.best_path = None
         self.found = False
         self.expanded = 0
+
+        self.totalSuccessors = 0
+        self.maxDepth = 0
+        self.execTime = 0.0
+
+        t0 = time.perf_counter()
 
         start = self.problem.start_state()
         stack = [(start, [start], 0)]
@@ -218,10 +256,16 @@ class DFSSearch:
             state, path, currentCost = stack.pop()
             self.expanded += 1
 
+            depth = len(path) - 1
+            if depth > self.maxDepth:
+                self.maxDepth = depth
+
             if state in explored:
                 continue
-
             explored.add(state)
+
+            actions = self.problem.actions(state)
+            self.totalSuccessors += len(actions)
 
             if self.problem.is_end(state):
                 self.best_cost = currentCost
@@ -229,16 +273,23 @@ class DFSSearch:
                 self.found = True
                 break
 
-            for action in self.problem.actions(state):
+            for action in actions:
                 nextState = self.problem.succ(state, action)
-
                 if nextState not in explored:
                     cost = currentCost + self.problem.cost(state, action)
                     stack.append((nextState, path + [nextState], cost))
+
+        self.execTime = time.perf_counter() - t0
+
+        b = (self.totalSuccessors / self.expanded) if self.expanded > 0 else 0.0
 
         return {
             "best_cost": self.best_cost,
             "best_path": self.best_path,
             "found": self.found,
             "expanded": self.expanded,
+            "b": b,
+            "D": self.maxDepth,
+            "d_found": (len(self.best_path) - 1) if self.best_path else None,
+            "time": self.execTime,
         }
