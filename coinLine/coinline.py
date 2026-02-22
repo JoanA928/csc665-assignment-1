@@ -4,7 +4,7 @@
 class State:
     def __init__(self, coins, playerScore=0, aiScore=0, turn="player"):
         self.coins = coins
-        self.playerScore = pScore
+        self.playerScore = playerScore
         self.aiScore = aiScore
         self.turn = turn
 
@@ -110,7 +110,7 @@ def succ(state, action):
 
     return State(
         coins=new_coins,
-        playerScore=new_pScore,
+        playerScore=new_playerScore,
         aiScore=new_aiScore,
         turn=new_turn,
     )
@@ -174,6 +174,32 @@ If the board is a terminal board, the minimax function should return None.
 """
 
 
-def minimax(state, is_maximizing):
-    raise NotImplementedError
+def minimax(state, isMaximizing):
+    if terminal(state):
+        return (state.playerScore - state.aiScore, None)
+
+    possibleActions = actions(state)
+    if not possibleActions:
+        return (state.playerScore - state.aiScore, None)
+
+    if isMaximizing:
+        bestValue = -float("inf")
+        bestAction = None
+        for a in possibleActions:
+            child = succ(state, a)
+            val, _ = minimax(child, False)
+            if val > bestValue:
+                bestValue = val
+                bestAction = a
+        return (bestValue, bestAction)
+    else:
+        bestValue = float("inf")
+        bestAction = None
+        for a in possibleActions:
+            child = succ(state, a)
+            val, _ = minimax(child, True)
+            if val < bestValue:
+                bestValue = val
+                bestAction = a
+        return (bestValue, bestAction)
 
