@@ -141,11 +141,46 @@ class BFSSearch:
         self.problem = problem
         self.best_cost = math.inf
         self.best_path = None
-        self.found = None
+        self.found = False
         self.expanded = 0
 
     def solve(self):
-        raise NotImplementedError()
+        self.best_cost = math.inf
+        self.best_cost = math.inf
+        self.best_path = None
+        self.found = False
+        self.expanded = 0
+
+        start = self.problem.start_state()
+
+        frontier = deque()
+        frontier.append((start, [start], 0))
+
+        explored = set()
+        explored.add(start)
+
+        while frontier:
+            state, path, currentCost = frontier.popleft()
+            self.expanded += 1
+
+            if self.problem.is_end(state):
+                self.best_cost = currentCost
+                self.best_path = path
+                self.found = True
+                break
+            for action in self.problem.actions(state):
+                nextState = self.problem.succ(state, action)
+
+                if nextState not in explored:
+                    explored.add(nextState)
+                    cost = currentCost + self.problem.cost(state, action)
+                    frontier.append((nextState, path + [nextState], cost))
+        return {
+            "best_cost": self.best_cost,
+            "best_path": self.best_path,
+            "found": self.found,
+            "expanded": self.expanded,
+        }
 
 
 """
@@ -162,7 +197,6 @@ returns a dictionary with the following informatin:
 
 
 class DFSSearch:
-
     def __init__(self, problem: SearchProblem):
         self.problem = problem
 
