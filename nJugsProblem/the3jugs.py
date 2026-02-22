@@ -79,20 +79,25 @@ class NJugsProblem(SearchProblem):
     def actions(self, state):
         if len(state) != self.n:
             raise ValueError("Lenght of 'state' doesn't match length of capacities")
+
         actions = []
-        index = 0
-        for jug in state:
-            if state[jug] < self.capacities[jug] and state[index] > 0 and index != jug:
-                actions.append(("pour", index, jug))
-                if index < self.n:
-                    index += 1
-                else:
-                    index = 0
-            if state[jug] < self.capacities[jug]:
-                actions.append(("fill", jug))
-            if state[jug] > 0:
-                actions.append(("empty", jug))
-        return tuple(actions)
+
+        for index in range(self.n):
+            if state[index] < self.capacities[index]:
+                actions.append(("fill", index, None))
+                if state[index] > 0:
+                    actions.append(("empty", index, None))
+
+        for index in range(self.n):
+            if state[index] == 0:
+                continue
+            for subIndex in range(self.n):
+                if index == subIndex:
+                    continue
+                if state[subIndex] < self.capacities[subIndex]:
+                    actions.append(("pour", index, subIndex))
+
+        return actions
 
     """
     Returns the state of the jugs after taking action (kind, i, j), without modifying the original state.
@@ -109,30 +114,26 @@ class NJugsProblem(SearchProblem):
     """
 
     def succ(self, state, action):
-        if len(state) != self.n:
-            raise ValueError("Lenght of 'state' doesn't match legnth of 'capacities")
-        if action[0] == "fill":
-            jug = action[1]
-            state = list(state)
-            state[jug] = self.capacities[jug]
+        kind, index, subIndex = action
+        state = list(state)
+
+        if kind == "fill":
+            state[index] = self.capacities[index]
             return tuple(state)
-        elif action[0] == "empty":
-            jug = action[1]
-            state = list(state)
-            state[jug] = 0
+
+        if kind == "empty":
+            state[index] = 0
             return tuple(state)
-        elif action[0] == "pour":
-            sourceJug = action[1]
-            targetJug = action[2]
-            state = list(state)
-            while (
-                state[sourceJug] > 0 and state[targetJug] < self.capacities[targetJug]
-            ):
-                state[sourceJug] = state[sourceJug] - 1
-                state[targetJug] = state[targetJug] + 1
+
+        if kind == "pour":
+            amountToPour = min(
+                state[index], self.capacities[subIndex] - state[subIndex]
+            )
+            state[index] -= amountToPour
+            state[subIndex] += amountToPour
             return tuple(state)
-        else:
-            raise ValueError(f"unknown action: {action}")
+
+        raise ValueError(f"Unknown action: {action}")
 
     # ---- Helpers ----
 
