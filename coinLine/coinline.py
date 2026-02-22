@@ -43,7 +43,22 @@ Any return value is acceptable if there are no coins left.
 
 
 def actions(state):
-    raise NotImplementedError
+    coins_left = len(state.coins)
+
+    if coins_left == 0:
+        return []
+
+    possible = []
+
+    if coins_left >= 1:
+        possible.append(("L", 1))
+        possible.append(("R", 1))
+
+    if coins_left >= 2:
+        possible.append(("L", 2))
+        possible.append(("R", 2))
+
+    return possible
 
 
 """
