@@ -5,8 +5,8 @@
 # ============================================================
 
 import math
-from collections import deque
 import time
+from collections import deque
 
 from the3jugs import *
 
@@ -22,6 +22,8 @@ returns a dictionary with the following informatin:
     expanded= # of state explored 
         
 """
+
+
 class BacktrackingSearch:
     def __init__(self, problem: SearchProblem):
         self.best_cost = math.inf
@@ -31,7 +33,7 @@ class BacktrackingSearch:
 
     def recurse(self, state, path, cost: int):
         if self.problem.is_end(state):
-       
+
             if cost < self.best_cost:
                 self.best_cost = cost
                 self.best_path = path[:]  # copy
@@ -43,10 +45,14 @@ class BacktrackingSearch:
             key = str(next_state)
             # key = next_state
             if key not in self.explored:
-                
+
                 self.explored.add(key)
-                
-                self.recurse(next_state, path + [next_state], cost + self.problem.cost(state, action))
+
+                self.recurse(
+                    next_state,
+                    path + [next_state],
+                    cost + self.problem.cost(state, action),
+                )
 
     def solve(self):
         start = self.problem.start_state()
@@ -58,6 +64,7 @@ class BacktrackingSearch:
             found=(self.best_path is not None),
             expanded=len(self.explored),
         )
+
 
 """
 Depth-first backtracking with simple 'explored' pruning (iterative).
@@ -71,6 +78,8 @@ returns a dictionary with the following informatin:
     expanded= # of state explored
 
 """
+
+
 class BacktrackingSearchIterative:
     def __init__(self, problem):
         self.best_cost = math.inf
@@ -125,12 +134,19 @@ returns a dictionary with the following informatin:
     found= boolean : path found or not 
     expanded= # of state explored
 """
+
+
 class BFSSearch:
     def __init__(self, problem: SearchProblem):
         self.problem = problem
+        self.best_cost = math.inf
+        self.best_path = None
+        self.found = None
+        self.expanded = 0
 
     def solve(self):
         raise NotImplementedError()
+
 
 """
 Add an iterative implementation of DFS.
@@ -143,14 +159,12 @@ returns a dictionary with the following informatin:
     found= boolean : path found or not 
     expanded= # of state explored
 """
-class DFSSearch:
 
+
+class DFSSearch:
 
     def __init__(self, problem: SearchProblem):
         self.problem = problem
 
     def solve(self):
         raise NotImplementedError()
-
-
-
