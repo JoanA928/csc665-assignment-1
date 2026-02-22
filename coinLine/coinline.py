@@ -137,7 +137,7 @@ You may assume utility will only be called on a state if terminal(state) is True
 
 
 def utility(state):
-    raise NotImplementedError
+    return (state.pScore, state.aiScore)
 
 
 """
