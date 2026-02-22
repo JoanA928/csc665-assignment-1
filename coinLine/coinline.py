@@ -102,7 +102,7 @@ def succ(state, action):
     if state.turn == "player":
         new_pScore = state.pScore + points
         new_aiScore = state.aiScore
-        new_turn = "ai"
+        new_turn = "AI"
     else:
         new_pScore = state.pScore
         new_aiScore = state.aiScore + points
