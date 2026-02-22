@@ -1,7 +1,8 @@
 # coinline.py
 
+
 class State:
-    def __init__(self, coins, pScore=0, aiScore=0, turn='player'): 
+    def __init__(self, coins, pScore=0, aiScore=0, turn="player"):
         self.coins = coins
         self.pScore = pScore
         self.aiScore = aiScore
@@ -16,8 +17,15 @@ Subsequently, the players alternate with each additional move.
 
 If there no coins left, any return value is acceptable.
 """
+
+
 def player(state):
-    raise NotImplementedError
+    if state.turn == "player":
+        state.turn = "AI"
+        return state.turn
+    else:
+        state.turn = "player"
+        return state.turn
 
 
 """
@@ -32,8 +40,11 @@ Possible moves depend on the numner of coins left.
 
 Any return value is acceptable if there are no coins left.
 """
+
+
 def actions(state):
     raise NotImplementedError
+
 
 """
 Returns the line of coins that results from taking action (i, j), without modifying the 
@@ -49,8 +60,11 @@ Importantly, the original state should be left unmodified. This means that simpl
 input state itself is not a correct implementation of this function. You’ll likely want to make a 
 deep copy of the state first before making any changes.
 """
+
+
 def succ(state, action):
     raise NotImplementedError
+
 
 """
 Returns True if game is over, False otherwise.
@@ -59,16 +73,22 @@ If the game is over when there are no coins left.
 
 Otherwise, the function should return False if the game is still in progress.
 """
+
+
 def terminal(state):
     raise NotImplementedError
+
 
 """
 Returns the scores of the two players.
 
 You may assume utility will only be called on a state if terminal(state) is True.
 """
+
+
 def utility(state):
     raise NotImplementedError
+
 
 """
 Returns the winner of the game, if there is one.
@@ -78,9 +98,10 @@ Returns the winner of the game, if there is one.
 - If there is no winner of the game (either because the game is in progress, or because it ended in a tie), the
   function should return None.
 """
+
+
 def winner(state):
     raise NotImplementedError
-    
 
 
 """
@@ -93,8 +114,8 @@ If multiple moves are equally optimal, any of those moves is acceptable.
 
 If the board is a terminal board, the minimax function should return None.
 """
+
+
 def minimax(state, is_maximizing):
     raise NotImplementedError
 
-
-    
