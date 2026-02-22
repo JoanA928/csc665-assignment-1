@@ -3,7 +3,7 @@
 
 class State:
     def __init__(self, coins, pScore=0, aiScore=0, turn="player"):
-        self.coins = coins
+        self.coins = tuple(coins)
         self.pScore = pScore
         self.aiScore = aiScore
         self.turn = turn
@@ -169,32 +169,53 @@ If the board is a terminal board, the minimax function should return None.
 """
 
 
-def minimax(state, is_maximizing):
-    if terminal(state):
-        return (state.pScore - state.aiScore, None)
+def minimax(state, is_maximizing=True):
+    if not hasattr(minimax, "_cache"):
+        minimax._cache = {}
+    cache = minimax._cache
 
-    possibleActions = actions(state)
-    if not possibleActions:
-        return (state.pScore - state.aiScore, None)
+    def solve(s, alpha, beta):
+        if terminal(s):
+            return (s.pScore - s.aiScore, None)
 
-    if is_maximizing:
-        bestValue = -float("inf")
-        bestAction = None
-        for a in possibleActions:
-            child = succ(state, a)
-            val, _ = minimax(child, False)
-            if val > bestValue:
-                bestValue = val
-                bestAction = a
-        return (bestValue, bestAction)
-    else:
-        bestValue = float("inf")
-        bestAction = None
-        for a in possibleActions:
-            child = succ(state, a)
-            val, _ = minimax(child, True)
-            if val < bestValue:
-                bestValue = val
-                bestAction = a
-        return (bestValue, bestAction)
+        maximizing = s.turn == "player"
+
+        key = (s.coins, s.pScore, s.aiScore, s.turn)
+        hit = cache.get(key)
+        if hit is not None:
+            return hit
+
+        acts = actions(s)
+        if not acts:
+            res = (s.pScore - s.aiScore, None)
+            cache[key] = res
+            return res
+
+        if maximizing:
+            best_val = -float("inf")
+            best_action = None
+            for a in acts:
+                val, _ = solve(succ(s, a), alpha, beta)
+                if val > best_val:
+                    best_val, best_action = val, a
+                alpha = max(alpha, best_val)
+                if beta <= alpha:
+                    break
+            res = (best_val, best_action)
+        else:
+            best_val = float("inf")
+            best_action = None
+            for a in acts:
+                val, _ = solve(succ(s, a), alpha, beta)
+                if val < best_val:
+                    best_val, best_action = val, a
+                beta = min(beta, best_val)
+                if beta <= alpha:
+                    break
+            res = (best_val, best_action)
+
+        cache[key] = res
+        return res
+
+    return solve(state, -float("inf"), float("inf"))
 
