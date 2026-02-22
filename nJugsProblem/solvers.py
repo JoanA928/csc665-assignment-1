@@ -199,6 +199,46 @@ returns a dictionary with the following informatin:
 class DFSSearch:
     def __init__(self, problem: SearchProblem):
         self.problem = problem
+        self.best_cost = math.inf
+        self.best_path = None
+        self.found = False
+        self.expanded = 0
 
     def solve(self):
-        raise NotImplementedError()
+        self.best_cost = math.inf
+        self.best_path = None
+        self.found = False
+        self.expanded = 0
+
+        start = self.problem.start_state()
+        stack = [(start, [start], 0)]
+        explored = set()
+
+        while stack:
+            state, path, currentCost = stack.pop()
+            self.expanded += 1
+
+            if state in explored:
+                continue
+
+            explored.add(state)
+
+            if self.problem.is_end(state):
+                self.best_cost = currentCost
+                self.best_path = path
+                self.found = True
+                break
+
+            for action in self.problem.actions(state):
+                nextState = self.problem.succ(state, action)
+
+                if nextState not in explored:
+                    cost = currentCost + self.problem.cost(state, action)
+                    stack.append((nextState, path + [nextState], cost))
+
+        return {
+            "best_cost": self.best_cost,
+            "best_path": self.best_path,
+            "found": self.found,
+            "expanded": self.expanded,
+        }
