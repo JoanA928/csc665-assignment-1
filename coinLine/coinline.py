@@ -126,7 +126,7 @@ Otherwise, the function should return False if the game is still in progress.
 
 
 def terminal(state):
-    raise NotImplementedError
+    return len(state.coins) == 0
 
 
 """
